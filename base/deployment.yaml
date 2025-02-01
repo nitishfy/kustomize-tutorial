@@ -13,6 +13,14 @@ spec:
     spec:
       containers:
       - name: nginx-container
-        image: nginx:latest
+        image: public.ecr.aws/nginx/nginx:latest
         ports:
         - containerPort: 80
+        volumeMounts:
+        - name: content
+          mountPath: /usr/share/nginx/html
+          readOnly: true
+      volumes:
+      - name: content  
+        configMap:
+          name: my-configmap
