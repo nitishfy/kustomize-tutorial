@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-webserver
+spec:
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+      - image: public.ecr.aws/nginx/nginx:1.27.3
+        name: nginx-container
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: content
+          readOnly: true
+      volumes:
+      - configMap:
+          name: my-configmap
+        name: content
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-service
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    app: web
+  type: NodePort
+---
+apiVersion: v1
+data:
+  index.html: |-
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <title>Dev</title>
+    </head>
+    <body>
+
+    <h1>test</h1>
+
+    </body>
+    </html>
+kind: ConfigMap
+metadata:
+  name: my-configmap
