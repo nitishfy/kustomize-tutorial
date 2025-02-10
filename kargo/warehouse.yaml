@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: kargo-git-repo-secret
+  namespace: kargo-demo-project
+  labels:
+    kargo.akuity.io/cred-type: git
+stringData:
+  repoURL: https://github.com/nitishfy/kustomize-tutorial
+  username: nitishfy
+  password: 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
+---
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Warehouse
+metadata:
+  name: my-warehouse
+  namespace: kargo-demo-project
+spec:
+  subscriptions:
+  - image:
+      repoURL: public.ecr.aws/nginx/nginx
+      semverConstraint: ^1.26.0
+      discoveryLimit: 5
+  - git:
+      repoURL: https://github.com/nitishfy/kustomize-tutorial
+      includePaths:
+      - .
+      excludePaths:
+      - ./README.md

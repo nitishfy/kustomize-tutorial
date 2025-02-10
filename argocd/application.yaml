@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: kargo-demo
+  namespace: argocd
+spec:
+  generators:
+  - list:
+      elements:
+      - stage: dev
+      - stage: prod
+  template:
+    metadata:
+      name: kargo-demo-{{stage}}
+      annotations:
+        kargo.akuity.io/authorized-stage: kargo-demo-project:{{stage}}
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/nitishfy/kustomize-tutorial
+        targetRevision: stage/{{stage}}
+        path: .
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: kargo-demo-{{stage}}
+      syncPolicy:
+        syncOptions:
+        - CreateNamespace=true
+
